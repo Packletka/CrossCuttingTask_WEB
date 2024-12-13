@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Выбор файлов</title>
+</head>
+<body>
+    <h1>Выберите файлы</h1>
+    <form method="POST" enctype="multipart/form-data">
+        <label for="input_file">Выберите input-файл:</label>
+        <input type="file" name="input_file" id="input_file" required><br><br>
+
+        <label for="output_file">Выберите output-файл:</label>
+        <input type="file" name="output_file" id="output_file" required><br><br>
+
+        <button type="submit">Загрузить файлы</button>
+    </form>
+</body>
+</html>
