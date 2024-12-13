@@ -1,15 +1,14 @@
+import os
 from flask import Flask, render_template, request, session
 import re
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'  # Замените на более безопасный ключ
+app.secret_key = 'your_secret_key'
 
 def extract_operands(expression):
-    # Находим все операнды и возвращаем уникальные
     return list(set(re.findall(r'\b[a-zA-Z]+\b', expression)))
 
 def is_valid_expression(expression):
-    # Простейшая проверка на валидность
     pattern = r'^[\s\w\+\-\*/\(\)]+$'
     return bool(re.match(pattern, expression))
 
@@ -17,13 +16,9 @@ def is_valid_expression(expression):
 def upload_file():
     if request.method == 'POST':
         input_file = request.files['input_file']
-        output_file = request.files['output_file']
-
-        # Читаем содержимое входного файла
         input_content = input_file.read().decode('utf-8').strip()
-        session['input_content'] = input_content  # Сохраняем содержимое в сессии
+        session['input_content'] = input_content
 
-        # Проверяем валидность выражения
         if is_valid_expression(input_content):
             operands = extract_operands(input_content)
             return render_template('input_values.html', operands=operands, expression=input_content)
@@ -37,17 +32,27 @@ def calculate():
     values = request.form.to_dict()
     expression = session.get('input_content', '')
 
-    # Замена операндов на введенные значения
     for operand, value in values.items():
         expression = expression.replace(operand, value)
 
-    # Вычисление результата
     try:
         result = eval(expression)
 
-        # Сохраняем операнды и результат в out.txt
-        with open("out.txt", "a") as f:  # Открываем файл в режиме добавления
+        # Убедимся, что папка для выходного файла существует
+        output_dir = 'outputs'
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+
+        # Записываем результат в out.txt
+        with open(os.path.join(output_dir, "out.txt"), "a") as f:
             f.write(f"Операнды: {values}, Выражение: {expression}, Результат: {result}\n")
+
+        # Сохраняем результат в выходной файл
+        if 'output_file' in request.files:
+            output_file = request.files['output_file']
+            output_file_path = os.path.join(output_dir, output_file.filename)
+            with open(output_file_path, "w") as f:
+                f.write(f"Выражение: {expression}\nРезультат: {result}\n")
 
         return render_template('result.html', result=result, expression=expression)
     except Exception as e:
