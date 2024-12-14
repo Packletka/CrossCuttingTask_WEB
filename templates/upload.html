@@ -10,9 +10,14 @@
             background-color: #f4f4f4;
             margin: 0;
             padding: 20px;
+            background-image: url('/static/image1.jpg'); /* Путь к вашему фону */
+            background-size: cover; /* Обрезаем изображение, чтобы оно заполнило весь экран */
+            background-repeat: no-repeat; /* Не повторяем изображение */
         }
         h1 {
             color: #333;
+            text-align: center; /* Центрируем заголовок */
+            margin: 20px 0; /* Добавляем отступы сверху и снизу */
         }
         form {
             background: white;
@@ -50,28 +55,28 @@
     </style>
 </head>
 <body>
-    <h1>Выберите файлы для загрузки</h1>
-    <form method="post" enctype="multipart/form-data" id="uploadForm">
-        <label for="input_file">Входной файл:</label>
-        <input type="file" name="input_file" accept=".txt" required>
-        <label for="output_file">Выходной файл:</label>
-        <input type="file" name="output_file" accept=".txt" required>
-        <input type="submit" value="Загрузить">
-        <div class="alert" id="errorAlert"></div>
-    </form>
+<h1>Выберите файлы для загрузки</h1>
+<form method="post" enctype="multipart/form-data" id="uploadForm">
+    <label for="input_file">Входной файл:</label>
+    <input type="file" name="input_file" accept=".txt" required>
+    <label for="output_file">Выходной файл:</label>
+    <input type="file" name="output_file" accept=".txt" required>
+    <input type="submit" value="Загрузить">
+    <div class="alert" id="errorAlert"></div>
+</form>
 
-    <script>
-        document.getElementById('uploadForm').addEventListener('submit', function(event) {
-            const inputFile = this.querySelector('input[name="input_file"]').value;
-            const outputFile = this.querySelector('input[name="output_file"]').value;
+<script>
+    document.getElementById('uploadForm').addEventListener('submit', function(event) {
+        const inputFile = this.querySelector('input[name="input_file"]').value;
+        const outputFile = this.querySelector('input[name="output_file"]').value;
 
-            if (!inputFile || !outputFile) {
-                event.preventDefault();
-                const alertDiv = document.getElementById('errorAlert');
-                alertDiv.textContent = 'Пожалуйста, выберите оба файла!';
-                alertDiv.style.display = 'block';
-            }
-        });
-    </script>
+        if (!inputFile || !outputFile) {
+            event.preventDefault();
+            const alertDiv = document.getElementById('errorAlert');
+            alertDiv.textContent = 'Пожалуйста, выберите оба файла!';
+            alertDiv.style.display = 'block';
+        }
+    });
+</script>
 </body>
 </html>

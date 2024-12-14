@@ -10,24 +10,28 @@
             background-color: #f4f4f4;
             margin: 0;
             padding: 20px;
+            background-image: url('/static/image1.jpg'); /* Путь к вашему фону */
+            background-size: cover; /* Обрезаем изображение, чтобы оно заполнило весь экран */
+            background-repeat: no-repeat; /* Не повторяем изображение */
         }
         h1 {
             color: #333;
+            text-align: center; /* Центрируем заголовок */
         }
         form {
             background: white;
             padding: 20px;
             border-radius: 5px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            max-width: 500px; /* Увеличиваем ширину формы */
-            margin: auto;
+            max-width: 400px; /* Ограничиваем ширину формы */
+            margin: 20px auto; /* Центрируем форму */
         }
         label {
             display: block;
             margin: 10px 0 5px;
         }
         input[type="number"] {
-            width: 100%; /* Полная ширина поля */
+            width: calc(100% - 20px); /* Учитываем отступы */
             padding: 10px;
             margin: 5px 0 15px;
             border: 1px solid #ccc;
@@ -62,6 +66,8 @@
             padding: 10px;
             margin: 20px 0;
             border-radius: 4px;
+            max-width: 100%; /* Ограничиваем ширину блока */
+            overflow: auto; /* Добавляем прокрутку, если текст длиннее */
         }
     </style>
 </head>

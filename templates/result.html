@@ -10,6 +10,9 @@
             background-color: #f4f4f4;
             margin: 0;
             padding: 20px;
+            background-image: url('/static/image1.jpg'); /* Путь к вашему фону */
+            background-size: cover; /* Обрезаем изображение, чтобы оно заполнило весь экран */
+            background-repeat: no-repeat; /* Не повторяем изображение */
         }
         h1 {
             color: #333;
@@ -38,11 +41,11 @@
     </style>
 </head>
 <body>
-    <div class="result">
-        <h1>Результат вычисления</h1>
-        <p><strong>Выражение:</strong> {{ expression }}</p>
-        <p><strong>Результат:</strong> {{ result }}</p>
-        <a href="/" class="back-button">Вернуться</a>
-    </div>
+<div class="result">
+    <h1>Результат вычисления</h1>
+    <p><strong>Выражение:</strong> {{ expression }}</p>
+    <p><strong>Результат:</strong> {{ result }}</p>
+    <a href="/" class="back-button">Вернуться</a>
+</div>
 </body>
 </html>

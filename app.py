@@ -2,13 +2,18 @@ import os
 import zipfile
 from flask import Flask, render_template, request, session
 import re
+from typing import Dict
 
 app = Flask(__name__)
 app.secret_key = '1S4631gyWoAyys5vVHlcjGRcRYy3O40Bzuze'
 
 
 def extract_operands(expression):
-    return list(set(re.findall(r'\b[a-zA-Z]+\b', expression)))
+    dc: Dict[str, int] = {}
+    # Формальный счетчик
+    for char in re.findall(r'\b[a-zA-Z]+\b', expression):
+        dc[char] = dc.get(char, 0) + 1
+    return dc.keys()
 
 
 def is_valid_expression(expression):
