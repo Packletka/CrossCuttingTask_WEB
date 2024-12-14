@@ -72,38 +72,38 @@
     </style>
 </head>
 <body>
-    <h1>Введите значения для операндов</h1>
-    <div class="expression">
-        <strong>Выражение:</strong>
-        <pre>{{ expression }}</pre>
-    </div>
-    <form method="post" action="/calculate" id="inputForm">
-        {% for operand in operands %}
-            <label for="{{ operand }}">{{ operand }}:</label>
-            <input type="number" name="{{ operand }}" required>
-        {% endfor %}
-        <input type="submit" value="Вычислить">
-        <div class="alert" id="errorAlert"></div>
-    </form>
+<h1>Введите значения для операндов</h1>
+<div class="expression">
+    <strong>Выражение:</strong>
+    <pre>{{ expression }}</pre>
+</div>
+<form method="post" action="/calculate" id="inputForm">
+    {% for operand in operands %}
+    <label for="{{ operand }}">{{ operand }}:</label>
+    <input type="number" name="{{ operand }}" required>
+    {% endfor %}
+    <input type="submit" value="Вычислить">
+    <div class="alert" id="errorAlert"></div>
+</form>
 
-    <script>
-        document.getElementById('inputForm').addEventListener('submit', function(event) {
-            let valid = true;
-            const inputs = this.querySelectorAll('input[type="number"]');
+<script>
+    document.getElementById('inputForm').addEventListener('submit', function(event) {
+        let valid = true;
+        const inputs = this.querySelectorAll('input[type="number"]');
 
-            inputs.forEach(input => {
-                if (input.value === '') {
-                    valid = false;
-                }
-            });
-
-            if (!valid) {
-                event.preventDefault();
-                const alertDiv = document.getElementById('errorAlert');
-                alertDiv.textContent = 'Пожалуйста, заполните все поля!';
-                alertDiv.style.display = 'block';
+        inputs.forEach(input => {
+            if (input.value === '') {
+                valid = false;
             }
         });
-    </script>
+
+        if (!valid) {
+            event.preventDefault();
+            const alertDiv = document.getElementById('errorAlert');
+            alertDiv.textContent = 'Пожалуйста, заполните все поля!';
+            alertDiv.style.display = 'block';
+        }
+    });
+</script>
 </body>
 </html>

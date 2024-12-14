@@ -29,20 +29,26 @@ def read_input_file(input_file) -> str:
             zip_ref.extractall('temp_extracted')
             extracted_files = os.listdir('temp_extracted')
             if extracted_files:
-                return read_file(os.path.join('temp_extracted', extracted_files[0]))
+                # Получаем все имена файлов и читаем каждый
+                expressions = []
+                for extracted_file in extracted_files:
+                    extracted_file_path = os.path.join('temp_extracted', extracted_file)
+                    with open(extracted_file_path, 'rb') as file:
+                        expressions.append(read_file(file, extracted_file))  # Передаем имя файла
+                return " ".join(expressions)  # Объединяем выражения из всех файлов
     else:
-        return read_file(input_file)
+        return read_file(input_file, input_file.filename)  # Передаем имя файла
 
 
-def read_file(file) -> str:
-    if file.filename.endswith('.json'):
+def read_file(file, filename: str) -> str:
+    if filename.endswith('.json'):
         return json.load(file)['expression']
-    elif file.filename.endswith('.yaml') or file.filename.endswith('.yml'):
+    elif filename.endswith('.yaml') or filename.endswith('.yml'):
         return yaml.safe_load(file)['expression']
-    elif file.filename.endswith('.xml'):
+    elif filename.endswith('.xml'):
         return read_xml(file)
-    elif file.filename.endswith('.txt'):
-        return file.read().decode('utf-8').strip()  # Обработка .txt файлов
+    elif filename.endswith('.txt'):
+        return file.read().decode('utf-8').strip()
     else:
         raise ValueError("Unsupported file format")
 
@@ -76,6 +82,12 @@ def calculate():
     expression = session.get('input_content', '')
     output_format = session.get('input_file_extension', 'json')  # Используем расширение файла
 
+    print(f"Output format: {output_format}")  # Для отладки
+
+    valid_formats = ['json', 'yaml', 'xml', 'txt', 'zip']
+    if output_format not in valid_formats:
+        return render_template('result.html', result='Ошибка: неподдерживаемый формат вывода', expression=expression)
+
     operands = extract_operands(expression)
     for operand in operands:
         if operand in values:
@@ -99,6 +111,7 @@ def calculate():
 
 
 def save_result_to_file(data: Dict[str, Any], output_format: str):
+    output_format = output_format.lower()  # Приводим к нижнему регистру
     output_path = f"outputs/out.{output_format}"
 
     if output_format == 'json':
@@ -117,6 +130,9 @@ def save_result_to_file(data: Dict[str, Any], output_format: str):
         with open(output_path, "w") as txt_file:
             for key, value in data.items():
                 txt_file.write(f"{key}: {value}\n")  # Сохраняем данные в формате ключ: значение
+    elif output_format == 'zip':
+        with zipfile.ZipFile(output_path, 'w') as zip_file:
+            zip_file.writestr('result.json', json.dumps(data, ensure_ascii=False, indent=4).encode('utf-8'))  # Записываем результат в zip как json
     else:
         raise ValueError("Unsupported output format")
 
