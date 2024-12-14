@@ -1,5 +1,5 @@
 <result>
-  <operands>{'a': '2', 'b': '5', 'c': '9'}</operands>
-  <expression>2 * 5 - 9</expression>
-  <result>1</result>
+  <operands>{'a': '12', 'b': '12', 'c': '12'}</operands>
+  <expression>12 * 12 - 12</expression>
+  <result>132</result>
 </result>
