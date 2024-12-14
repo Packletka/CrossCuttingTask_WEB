@@ -1,0 +1,6 @@
+expression: 69 * 52 - 1488
+operands:
+  a: '69'
+  b: '52'
+  c: '1488'
+result: 2100
