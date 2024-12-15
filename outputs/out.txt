@@ -1,3 +1,3 @@
-operands: {'a': '12', 'b': '12', 'c': '12'}
-expression: 12 * 12 - 12
-result: 132
+operands: {'a': '784', 'b': '2', 'c': '1488'}
+expression: 784 * 2 - 1488
+result: 80
