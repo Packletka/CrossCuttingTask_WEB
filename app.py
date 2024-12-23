@@ -6,6 +6,8 @@ import xml.etree.ElementTree as ET
 from flask import Flask, render_template, request, session
 import re
 from typing import Dict, Any
+from Crypto.Cipher import ARC4
+import base64
 
 app = Flask(__name__)
 app.secret_key = '1S4631gyWoAyys5vVHlcjGRcRYy3O40Bzuze'
@@ -23,24 +25,30 @@ def is_valid_expression(expression: str) -> bool:
     return bool(re.match(pattern, expression))
 
 
-def read_input_file(input_file) -> str:
+def decrypt_rc4(encrypted_data: bytes, key: str) -> str:
+    """Decrypts a byte string using RC4."""
+    cipher = ARC4.new(key.encode())
+    decrypted_data = cipher.decrypt(encrypted_data)
+    return decrypted_data.decode('utf-8')  # Assuming the decrypted data is UTF-8 encoded
+
+
+def read_input_file(input_file, key=None) -> str:
     if input_file.filename.endswith('.zip'):
         with zipfile.ZipFile(input_file, 'r') as zip_ref:
             zip_ref.extractall('temp_extracted')
             extracted_files = os.listdir('temp_extracted')
             if extracted_files:
-                # Получаем все имена файлов и читаем каждый
                 expressions = []
                 for extracted_file in extracted_files:
                     extracted_file_path = os.path.join('temp_extracted', extracted_file)
                     with open(extracted_file_path, 'rb') as file:
-                        expressions.append(read_file(file, extracted_file))  # Передаем имя файла
-                return " ".join(expressions)  # Объединяем выражения из всех файлов
+                        expressions.append(read_file(file, extracted_file, key))
+                return " ".join(expressions)
     else:
-        return read_file(input_file, input_file.filename)  # Передаем имя файла
+        return read_file(input_file, input_file.filename, key)
 
 
-def read_file(file, filename: str) -> str:
+def read_file(file, filename: str, key: str = None) -> str:
     if filename.endswith('.json'):
         return json.load(file)['expression']
     elif filename.endswith('.yaml') or filename.endswith('.yml'):
@@ -49,6 +57,9 @@ def read_file(file, filename: str) -> str:
         return read_xml(file)
     elif filename.endswith('.txt'):
         return file.read().decode('utf-8').strip()
+    elif filename.endswith('.enc') and key:
+        encrypted_data = file.read()  # Read the file as binary
+        return decrypt_rc4(encrypted_data, key)  # Decrypt without initial decoding
     else:
         raise ValueError("Unsupported file format")
 
@@ -63,9 +74,15 @@ def read_xml(file) -> str:
 def upload_file():
     if request.method == 'POST':
         input_file = request.files['input_file']
-        input_content = read_input_file(input_file)
+        encryption_key = request.form.get('encryption_key', '').strip()
+
+        try:
+            input_content = read_input_file(input_file, encryption_key if input_file.filename.endswith('.enc') else None)
+        except Exception as e:
+            return f"Ошибка: {str(e)}", 400
+
         session['input_content'] = input_content
-        session['input_file_extension'] = input_file.filename.split('.')[-1]  # Сохраняем расширение файла
+        session['input_file_extension'] = input_file.filename.split('.')[-1]
 
         if is_valid_expression(input_content):
             operands = extract_operands(input_content)
@@ -80,9 +97,7 @@ def upload_file():
 def calculate():
     values = request.form.to_dict()
     expression = session.get('input_content', '')
-    output_format = session.get('input_file_extension', 'json')  # Используем расширение файла
-
-    print(f"Output format: {output_format}")  # Для отладки
+    output_format = session.get('input_file_extension', 'json')
 
     valid_formats = ['json', 'yaml', 'xml', 'txt', 'zip']
     if output_format not in valid_formats:
@@ -102,7 +117,6 @@ def calculate():
             "result": result
         }
 
-        # Сохраняем результат в файл с выбранным форматом
         save_result_to_file(output_data, output_format)
 
         return render_template('result.html', result=result, expression=expression)
@@ -111,7 +125,7 @@ def calculate():
 
 
 def save_result_to_file(data: Dict[str, Any], output_format: str):
-    output_format = output_format.lower()  # Приводим к нижнему регистру
+    output_format = output_format.lower()
     output_path = f"outputs/out.{output_format}"
 
     if output_format == 'json':
@@ -129,10 +143,10 @@ def save_result_to_file(data: Dict[str, Any], output_format: str):
     elif output_format == 'txt':
         with open(output_path, "w") as txt_file:
             for key, value in data.items():
-                txt_file.write(f"{key}: {value}\n")  # Сохраняем данные в формате ключ: значение
+                txt_file.write(f"{key}: {value}\n")
     elif output_format == 'zip':
         with zipfile.ZipFile(output_path, 'w') as zip_file:
-            zip_file.writestr('result.json', json.dumps(data, ensure_ascii=False, indent=4).encode('utf-8'))  # Записываем результат в zip как json
+            zip_file.writestr('result.json', json.dumps(data, ensure_ascii=False, indent=4).encode('utf-8'))
     else:
         raise ValueError("Unsupported output format")
 
