@@ -34,10 +34,10 @@
 
 ### Базы данных:
 
-•   **PostgreSQL** <img src="https://img.icons8.com/color/48/000000/postgresql.png" align="center" width="30" height="30" />
+•   **PostgreSQL**
     
     Предпочитаю PostgreSQL как надежное и мощное решение для хранения данных.
-•   **SQLite** <img src="https://img.icons8.com/color/48/000000/sqlite.png" align="center" width="30" height="30" />
+•   **SQLite**
     Иногда использую SQLite для простых локальных задач.
 
 ### Прочее:
